@@ -20,8 +20,5 @@ use App\Http\Controllers\OrganizationController;
 // });
 
 Route::group(['middleware' => ['auth']], function () {
-    
-    /** Index */
     Route::get('/setting', [OrganizationController::class, 'show']);
-
 });
