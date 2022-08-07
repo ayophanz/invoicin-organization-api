@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\OrganizationAddressController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,13 @@ use App\Http\Controllers\OrganizationController;
 //     return $request->user();
 // });
 
-Route::group(['middleware' => ['auth']], function () {
-    Route::get('/setting', [OrganizationController::class, 'show']);
+Route::group(['prefix' => 'organization', 'middleware' => ['auth']], function () {
+    Route::controller(OrganizationController::class)->group( function () {
+        Route::get('/settings', 'settings');
+        Route::get('/addresses', 'addresses');
+    });
+    Route::controller(OrganizationAddressController::class)->group( function () {
+        Route::post('/addresses/store', 'store');
+        Route::put('/addresses/update', 'update');
+    });
 });

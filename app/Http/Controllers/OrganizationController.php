@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\OrganizationSetting;
+use App\Models\OrganizationAddress;
 use App\Transformers\OrganizationSettingTransformer;
+use App\Transformers\OrganizationAddressTransformer;
 use App\Traits\ApiResponser;
 use Auth;
 
@@ -13,11 +15,6 @@ class OrganizationController extends Controller
 {
     use ApiResponser;
 
-    /**
-     * The authentication guard factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
-     */
     protected $auth;
 
     /**
@@ -70,14 +67,7 @@ class OrganizationController extends Controller
      */
     public function show()
     {
-        $transformer = new OrganizationSettingTransformer();
-        $organizationSetting = OrganizationSetting::where('organization_id', $this->auth->organization_id)->get();
-        return $this->successResponse(
-            $transformer->transformCollection(
-                $organizationSetting->transform(function ($item, $key) {
-                    return $item;
-                })->all(), Response::HTTP_OK)
-        );
+        //
     }
 
     /**
@@ -112,5 +102,41 @@ class OrganizationController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Show the settings resource
+     * 
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function settings()
+    {
+        $transformer = new OrganizationSettingTransformer();
+        $organizationSetting = OrganizationSetting::where('organization_id', $this->auth->organization_id)->get();
+        return $this->successResponse(
+            $transformer->transformCollection(
+                $organizationSetting->transform(function ($item, $key) {
+                    return $item;
+                })->all(), Response::HTTP_OK)
+        );
+    }
+
+    /**
+     * Show the addresses resource
+     * 
+     * @param int $id
+     * @return \Illuminate\http\Response
+     */
+    public function addresses()
+    {
+        $transformer = new OrganizationAddressTransformer();
+        $organizationAddress = OrganizationAddress::where('organization_id', $this->auth->organization_id)->get();
+        return $this->successResponse(
+            $transformer->transformCollection(
+                $organizationAddress->transform(function ($item, $key) {
+                    return $item;
+                })->all(), Response::HTTP_OK)
+        );
     }
 }
