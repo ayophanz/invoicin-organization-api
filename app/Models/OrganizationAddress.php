@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrganizationAddress extends Model
 {
@@ -23,7 +24,7 @@ class OrganizationAddress extends Model
      */
     public function organizationAddressType() : BelongsTo
     {
-        return $this->belongsTo(CustomerAddressType::class);
+        return $this->belongsTo(OrganizationAddressType::class);
     }
 
     /**

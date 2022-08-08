@@ -28,5 +28,6 @@ Route::group(['prefix' => 'organization', 'middleware' => ['auth']], function ()
     Route::controller(OrganizationAddressController::class)->group( function () {
         Route::post('/addresses/store', 'store');
         Route::put('/addresses/update', 'update');
+        Route::delete('/addresses/destroy', 'destroy');
     });
 });

@@ -37,7 +37,15 @@ class OrganizationAddressController extends Controller
      */
     public function index()
     {
-        //
+        $addresses = OrganizationAddress::where('organization_id', $this->auth->organization_id)->get();
+        return $this->successResponse(
+            $this->transformer->transformCollection(
+                $addresses->transform(function ($item, $key) {
+                    return $item;
+                })->all(),
+                Response::HTTP_OK 
+            )
+        );
     }
 
     /**
@@ -81,7 +89,7 @@ class OrganizationAddressController extends Controller
             /** Save here */
             $address  = OrganizationAddress::create([
                 'organization_id'              => $this->auth->organization_id,
-                'organizaiton_address_type_id' => $request->organization_address_type_id,
+                'organization_address_type_id' => $request->organization_address_type_id,
                 'country_id'                   => $request->country_id,
                 'address'                      => $request->address,
             ]);
@@ -162,8 +170,13 @@ class OrganizationAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $address = OrganizationAddress::where('organization_address_type_id', $request->organization_address_type_id)->where('organization_id', $this->auth->organization_id)->first();
+        if (!is_null($address)) {
+            $address->delete();
+            return $this->successResponse(['Status' => 'Ok'], Response::HTTP_OK);
+        }
+        return $this->errorResponse(['Status' => 'Not Found'], Response::HTTP_NOT_FOUND);
     }
 }

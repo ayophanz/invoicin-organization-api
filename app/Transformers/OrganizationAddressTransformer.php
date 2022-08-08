@@ -14,11 +14,11 @@ class OrganizationAddressTransformer extends BaseTransformer
     public function transform($item, $method = 'index') : array
     {
         return [
-            'id'                    => $item->id,
-            'organization_id'       => $item->organization_id,
-            'customer_address_type' => $item->customerAddressType ? (array) $this->relationTransformer($item->organizationAddressType, new CustomerAddressTypeTransformer) : [],
-            'country'               => $item->country ? (array) $this->relationTransformer($item->country, new CountryTransformer) : [],
-            'address'               => $item->address,
+            'id'                        => $item->id,
+            'organization_id'           => $item->organization_id,
+            'organization_address_type' => $item->organizationAddressType ? (array) $this->relationTransformer($item->organizationAddressType, new OrganizationAddressTypeTransformer) : [],
+            'country'                   => $item->country ? (array) $this->relationTransformer($item->country, new CountryTransformer) : [],
+            'address'                   => $item->address,
         ];
     }
 }
