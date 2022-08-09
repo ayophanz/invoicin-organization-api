@@ -11,11 +11,21 @@ class OrganizationAddress extends Model
     use HasFactory;
 
     protected $fillable = [
-        'organization_id',
+        'organization_uuid',
         'organization_address_type_id',
         'address',
         'country_id'
     ];
+
+    /**
+     * An address belongs to a organization
+     *
+     * @return BelongsTo The attached organization.
+     */
+    public function organization() : BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 
     /**
      * An address belongs to a address type.

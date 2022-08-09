@@ -22,8 +22,10 @@ use App\Http\Controllers\OrganizationAddressController;
 
 Route::group(['prefix' => 'organization', 'middleware' => ['auth']], function () {
     Route::controller(OrganizationController::class)->group( function () {
-        Route::get('/settings', 'settings');
-        Route::get('/addresses', 'addresses');
+        Route::get('/show', 'show');
+        Route::post('/store', 'store');
+        // Route::get('/settings', 'settings');
+        // Route::get('/addresses', 'addresses');
     });
     Route::controller(OrganizationAddressController::class)->group( function () {
         Route::post('/addresses/store', 'store');

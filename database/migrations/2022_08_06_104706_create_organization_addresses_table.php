@@ -15,7 +15,7 @@ class CreateOrganizationAddressesTable extends Migration
     {
         Schema::create('organization_addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('organization_id');
+            $table->foreignUuid('organization_uuid');
             $table->unsignedBigInteger('organization_address_type_id');
             $table->text('address');
             $table->unsignedBigInteger('country_id');
@@ -25,6 +25,7 @@ class CreateOrganizationAddressesTable extends Migration
         Schema::table('organization_addresses', function (Blueprint $table) {
             $table->foreign('organization_address_type_id')->references('id')->on('organization_address_types')->onDelete('cascade');
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
+            $table->foreign('organization_uuid')->references('uuid')->on('organizations');
         });
     }
 

@@ -15,7 +15,7 @@ class OrganizationAddressTransformer extends BaseTransformer
     {
         return [
             'id'                        => $item->id,
-            'organization_id'           => $item->organization_id,
+            'organization_uuid'         => $item->organization_uuid,
             'organization_address_type' => $item->organizationAddressType ? (array) $this->relationTransformer($item->organizationAddressType, new OrganizationAddressTypeTransformer) : [],
             'country'                   => $item->country ? (array) $this->relationTransformer($item->country, new CountryTransformer) : [],
             'address'                   => $item->address,

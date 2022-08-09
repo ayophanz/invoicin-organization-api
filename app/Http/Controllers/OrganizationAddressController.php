@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\Organization;
 use App\Models\OrganizationAddress;
 use App\Transformers\OrganizationAddressTransformer;
 use App\Traits\ApiResponser;
@@ -37,15 +38,7 @@ class OrganizationAddressController extends Controller
      */
     public function index()
     {
-        $addresses = OrganizationAddress::where('organization_id', $this->auth->organization_id)->get();
-        return $this->successResponse(
-            $this->transformer->transformCollection(
-                $addresses->transform(function ($item, $key) {
-                    return $item;
-                })->all(),
-                Response::HTTP_OK 
-            )
-        );
+        //
     }
 
     /**
@@ -75,7 +68,7 @@ class OrganizationAddressController extends Controller
                 'numeric',
                 Rule::unique('organization_addresses')
                     ->using(function ($q) { 
-                        $q->where('organization_id', $this->auth->organization_id); 
+                        $q->where('organization_uuid', $this->auth->organization_id);
                     })
             ],
         ];
@@ -87,8 +80,8 @@ class OrganizationAddressController extends Controller
         $address = [];
         try {
             /** Save here */
-            $address  = OrganizationAddress::create([
-                'organization_id'              => $this->auth->organization_id,
+            $organization = Organization::find($this->auth->organization_id);
+            $address      =  $organization->organizationAddresses()->create([
                 'organization_address_type_id' => $request->organization_address_type_id,
                 'country_id'                   => $request->country_id,
                 'address'                      => $request->address,
@@ -140,7 +133,7 @@ class OrganizationAddressController extends Controller
                 'numeric',
                 Rule::unique('organization_addresses')
                     ->using(function ($q) { 
-                        $q->where('organization_id', $this->auth->organization_id); 
+                        $q->where('organization_uuid', $this->auth->organization_id); 
                     })->ignore($request->organization_address_type_id, 'organization_address_type_id')
             ],
         ];
@@ -152,7 +145,8 @@ class OrganizationAddressController extends Controller
         $address = [];
         try {
             /** Update here */
-            $address = tap(OrganizationAddress::where('organization_id', $this->auth->organization_id)->where('organization_address_type_id', $request->organization_address_type_id))
+            $organization = Organization::find($this->auth->organization_id);
+            $address      = tap($organization->organizationAddresses()->where('organization_address_type_id', $request->organization_address_type_id))
                 ->update([
                     'address'    => $request->address,
                     'country_id' => $request->country_id,
@@ -172,7 +166,8 @@ class OrganizationAddressController extends Controller
      */
     public function destroy(Request $request)
     {
-        $address = OrganizationAddress::where('organization_address_type_id', $request->organization_address_type_id)->where('organization_id', $this->auth->organization_id)->first();
+        $organization = Organization::find($this->auth->organization_id);
+        $address      = $organization->organizationAddresses()->where('organization_address_type_id', $request->organization_address_type_id)->first();
         if (!is_null($address)) {
             $address->delete();
             return $this->successResponse(['Status' => 'Ok'], Response::HTTP_OK);

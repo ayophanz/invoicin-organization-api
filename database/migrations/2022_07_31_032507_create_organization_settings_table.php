@@ -15,9 +15,8 @@ class CreateOrganizationSettingsTable extends Migration
     {
         Schema::create('organization_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('organization_id');
             $table->string('sourceable_type')->nullable();
-            $table->bigInteger('sourceable_id')->nullable();
+            $table->string('sourceable_id')->nullable();
             $table->string('key');
             $table->longText('value')->nullable();
             $table->timestamps();
