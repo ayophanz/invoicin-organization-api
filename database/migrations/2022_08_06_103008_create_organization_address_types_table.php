@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrganizationSettingsTable extends Migration
+class CreateOrganizationAddressTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateOrganizationSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('organization_settings', function (Blueprint $table) {
+        Schema::create('organization_address_types', function (Blueprint $table) {
             $table->id();
-            $table->string('sourceable_type')->nullable();
-            $table->string('sourceable_id')->nullable();
-            $table->string('key');
-            $table->longText('value')->nullable();
+            $table->string('name');
             $table->timestamps();
         });
+
+        // Call seeder
+        Artisan::call('db:seed', [
+            '--class' => 'OrganizationAddressTypeSeeder',
+        ]);
     }
 
     /**
@@ -30,6 +32,6 @@ class CreateOrganizationSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('organization_settings');
+        Schema::dropIfExists('organization_address_types');
     }
 }

@@ -10,7 +10,6 @@ class OrganizationSetting extends Model
     use HasFactory;
     
     protected $fillable = [
-        'organization_id',
         'sourceable_id', 
         'sourceable_type',
         'key', 
@@ -20,5 +19,10 @@ class OrganizationSetting extends Model
     public function sourceable()
     {
         return $this->morphTo();
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'sourceable_id');
     }
 }

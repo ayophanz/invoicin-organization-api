@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\Organization;
 use App\Models\OrganizationSetting;
-use App\Transformers\OrganizationSettingTransformer;
+use App\Models\OrganizationAddress;
+use App\Transformers\OrganizationTransformer;
 use App\Traits\ApiResponser;
 use Auth;
 
@@ -13,22 +15,13 @@ class OrganizationController extends Controller
 {
     use ApiResponser;
 
-    /**
-     * The authentication guard factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
-     */
     protected $auth;
+    protected $transformer;
 
-    /**
-     * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
-     * @return void
-     */
-    public function __construct()
+    public function __construct(OrganizationTransformer $transformer)
     {
-        $this->auth = Auth::user();
+        $this->transformer = $transformer;
+        $this->auth        = Auth::user();
     }
     
     /**
@@ -59,7 +52,13 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $organization        = new Organization();
+        $organization->name  = $request->organization_name;
+        $organization->email = $request->organization_email;
+        $organization->type  = $request->organization_type;
+        $organization->save();
+
+        return $this->successResponse($organization, Response::HTTP_OK);
     }
 
     /**
@@ -70,14 +69,8 @@ class OrganizationController extends Controller
      */
     public function show()
     {
-        $transformer = new OrganizationSettingTransformer();
-        $organizationSetting = OrganizationSetting::where('organization_id', $this->auth->organization_id)->get();
-        return $this->successResponse(
-            $transformer->transformCollection(
-                $organizationSetting->transform(function ($item, $key) {
-                    return $item;
-                })->all(), Response::HTTP_OK)
-        );
+        $organization = Organization::find($this->auth->organization_id);
+        return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
     }
 
     /**

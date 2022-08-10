@@ -2,24 +2,44 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\UUID;
 
 class Organization extends Model
 {
+    use HasFactory, SoftDeletes, UUID;
+
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'email',
+        'type',
+    ];
 
-    public function __construct(array $attributes = [], $data = [])
+     /**
+     * A organization has many addresses.
+     *
+     * @return HasMany the attached addresses
+     */
+    public function addresses() : HasMany
     {
-        parent::__construct($attributes);
+        return $this->hasMany(OrganizationAddress::class);
+    }
 
-        foreach ($data as $k => $v) {
-            $this->$k = $v;
-        }
+     /**
+     * An customer has many organization settings.
+     *
+     * @return morphToMany The attached organization settings.
+     */
+    public function settings()
+    {
+        return $this->morphMany(OrganizationSetting::class, 'sourceable');
     }
 }
