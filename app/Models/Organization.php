@@ -28,8 +28,18 @@ class Organization extends Model
      *
      * @return HasMany the attached addresses
      */
-    public function organizationAddresses() : HasMany
+    public function addresses() : HasMany
     {
         return $this->hasMany(OrganizationAddress::class);
+    }
+
+     /**
+     * An customer has many organization settings.
+     *
+     * @return morphToMany The attached organization settings.
+     */
+    public function settings()
+    {
+        return $this->morphMany(OrganizationSetting::class, 'sourceable');
     }
 }

@@ -8,8 +8,6 @@ use App\Models\Organization;
 use App\Models\OrganizationSetting;
 use App\Models\OrganizationAddress;
 use App\Transformers\OrganizationTransformer;
-use App\Transformers\OrganizationSettingTransformer;
-use App\Transformers\OrganizationAddressTransformer;
 use App\Traits\ApiResponser;
 use Auth;
 
@@ -20,12 +18,6 @@ class OrganizationController extends Controller
     protected $auth;
     protected $transformer;
 
-    /**
-     * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
-     * @return void
-     */
     public function __construct(OrganizationTransformer $transformer)
     {
         $this->transformer = $transformer;

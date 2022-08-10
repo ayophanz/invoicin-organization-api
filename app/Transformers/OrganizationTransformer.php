@@ -14,10 +14,11 @@ class OrganizationTransformer extends BaseTransformer
     public function transform($item, $method = 'index') : array
     {
         return [
-            'uuid'                   => $item->uuid,
-            'name'                   => $item->name,
-            'email'                  => $item->email,
-            'organization_addresses' => $item->organizationAddresses ? (array) $this->relationTransformer($item->organizationAddresses, new OrganizationAddressTransformer) : [],
+            'uuid'      => $item->uuid,
+            'name'      => $item->name,
+            'email'     => $item->email,
+            'addresses' => $item->addresses ? (array) $this->relationTransformer($item->addresses, new OrganizationAddressTransformer) : [],
+            'settings'  => $item->settings ? (array) $this->relationTransformer($item->settings, new OrganizationSettingTransformer) : [],
         ];
     }
 }

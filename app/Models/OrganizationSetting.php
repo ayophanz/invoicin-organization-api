@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrganizationSetting extends Model
 {
@@ -22,12 +21,7 @@ class OrganizationSetting extends Model
         return $this->morphTo();
     }
 
-    /**
-     * An address belongs to a organization
-     *
-     * @return BelongsTo The attached organization.
-     */
-    public function organization() : BelongsTo
+    public function organization()
     {
         return $this->belongsTo(Organization::class, 'sourceable_id');
     }
