@@ -96,9 +96,16 @@ class OrganizationAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(Request $request)
     {
-        //
+        try {
+            $organization = Organization::find($this->auth->organization_id);
+            $address      = $organization->addresses()->where('organization_address_type_id', $request->organization_address_type_id)->first();
+
+            return $this->successResponse($this->transformer->transform($address), Response::HTTP_OK);
+        } catch(\Exception $e) {
+            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

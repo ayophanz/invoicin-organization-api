@@ -32,7 +32,7 @@ class OrganizationAddress extends Model
      *
      * @return BelongsTo The attached address type.
      */
-    public function organizationAddressType() : BelongsTo
+    public function addressType() : BelongsTo
     {
         return $this->belongsTo(OrganizationAddressType::class);
     }
