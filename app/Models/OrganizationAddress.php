@@ -14,6 +14,8 @@ class OrganizationAddress extends Model
         'organization_uuid',
         'organization_address_type_id',
         'address',
+        'city',
+        'zipcode',
         'country_id'
     ];
 
