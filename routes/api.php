@@ -22,24 +22,29 @@ use App\Http\Controllers\OrganizationSettingController;
 //     return $request->user();
 // });
 
-Route::group(['prefix' => 'organization', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
-        Route::get('/show', 'show');
-        Route::post('/store', 'store');
-        // Route::get('/settings', 'settings');
-        // Route::get('/addresses', 'addresses');
+        Route::get('countries', 'countries');
     });
-    Route::controller(OrganizationAddressController::class)->group( function () {
-        Route::get('/addresses/show', 'show');
-        Route::post('/addresses/store', 'store');
-        Route::put('/addresses/update', 'update');
-        Route::delete('/addresses/destroy', 'destroy');
-    });
-    Route::controller(OrganizationSettingController::class)->group( function () {
-        Route::get('/settings/show', 'show');
-        Route::post('/settings/store', 'store');
-        Route::put('/settings/update', 'update');
-        Route::delete('/settings/destroy', 'destroy');
+    Route::group(['middleware' => ['auth', '2fa']], function () {
+        Route::controller(OrganizationController::class)->group( function () {
+            Route::get('show', 'show');
+            Route::post('store', 'store');
+            // Route::get('/settings', 'settings');
+            // Route::get('/addresses', 'addresses');
+        });
+        Route::controller(OrganizationAddressController::class)->group( function () {
+            Route::get('addresses/show', 'show');
+            Route::post('addresses/store', 'store');
+            Route::put('addresses/update', 'update');
+            Route::delete('addresses/destroy', 'destroy');
+        });
+        Route::controller(OrganizationSettingController::class)->group( function () {
+            Route::get('settings/show', 'show');
+            Route::post('settings/store', 'store');
+            Route::put('settings/update', 'update');
+            Route::delete('settings/destroy', 'destroy');
+        });
     });
 });
 

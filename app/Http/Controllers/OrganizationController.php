@@ -7,21 +7,20 @@ use Illuminate\Http\Response;
 use App\Models\Organization;
 use App\Models\OrganizationSetting;
 use App\Models\OrganizationAddress;
+use App\Models\Country;
 use App\Transformers\OrganizationTransformer;
+use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use Auth;
 
 class OrganizationController extends Controller
 {
     use ApiResponser;
-
-    protected $auth;
     protected $transformer;
 
     public function __construct(OrganizationTransformer $transformer)
     {
         $this->transformer = $transformer;
-        $this->auth        = Auth::user();
     }
     
     /**
@@ -53,9 +52,9 @@ class OrganizationController extends Controller
     public function store(Request $request)
     {
         $organization        = new Organization();
-        $organization->name  = $request->organization_name;
-        $organization->email = $request->organization_email;
-        $organization->type  = $request->organization_type;
+        $organization->name  = $request->name;
+        $organization->email = $request->orgEmail;
+        $organization->type  = $request->type;
         $organization->save();
 
         return $this->successResponse($organization, Response::HTTP_OK);
@@ -69,7 +68,7 @@ class OrganizationController extends Controller
      */
     public function show()
     {
-        $organization = Organization::find($this->auth->organization_id);
+        $organization = Organization::find(Auth::user()->organization_id);
         return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
     }
 
@@ -105,5 +104,25 @@ class OrganizationController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * All countries.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function countries()
+    {
+        $countries = Country::get();
+        $this->transformer = new CountryTransformer();
+        ;
+        return $this->successResponse(
+            $this->transformer->transformCollection(
+                    $countries->transform(function($item, $key) {
+                    return $item;
+                })->all()
+            ), 
+        Response::HTTP_OK);
     }
 }
