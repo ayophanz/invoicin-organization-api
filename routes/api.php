@@ -24,12 +24,12 @@ use App\Http\Controllers\OrganizationSettingController;
 
 Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
+        Route::post('store', 'store')->middleware(['auth']);
         Route::get('countries', 'countries');
     });
     Route::group(['middleware' => ['auth', '2fa']], function () {
         Route::controller(OrganizationController::class)->group( function () {
             Route::get('show', 'show');
-            Route::post('store', 'store');
             // Route::get('/settings', 'settings');
             // Route::get('/addresses', 'addresses');
         });
