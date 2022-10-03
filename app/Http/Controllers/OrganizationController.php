@@ -12,6 +12,7 @@ use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use Auth;
+use Image;
 
 class OrganizationController extends Controller
 {
@@ -56,6 +57,13 @@ class OrganizationController extends Controller
         $organization->email = $request->orgEmail;
         $organization->type  = $request->type;
         $organization->save();
+
+        if (count($request->logo) > 0) {
+            $logo = 'company.jpg';
+            $path = storage_path() . '/app/files/company_' . $organization->uuid. '/logo/';
+            \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
+            Image::make($request->logo[0])->save($path . $logo);
+        }
 
         return $this->successResponse($organization, Response::HTTP_OK);
     }
