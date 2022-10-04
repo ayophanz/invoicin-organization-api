@@ -24,8 +24,9 @@ use App\Http\Controllers\OrganizationSettingController;
 
 Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
-        Route::post('store', 'store')->middleware(['auth']);
         Route::get('countries', 'countries');
+        Route::post('validate', 'validate');
+        Route::post('store', 'store')->middleware(['auth']);
     });
     Route::group(['middleware' => ['auth', '2fa']], function () {
         Route::controller(OrganizationController::class)->group( function () {

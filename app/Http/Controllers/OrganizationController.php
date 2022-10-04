@@ -11,6 +11,7 @@ use App\Models\Country;
 use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
+use App\Http\Requests\Organization\StoreRequest;
 use Auth;
 use Image;
 
@@ -42,6 +43,17 @@ class OrganizationController extends Controller
     public function create()
     {
         //
+    }
+
+    /**
+     * Validate org registration request.
+     *
+     * @param  \Illuminate\Http\StoreRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function orgValidate(StoreRequest $request)
+    {
+        return $this->successResponse(['success' => true], Response::HTTP_OK);;
     }
 
     /**
