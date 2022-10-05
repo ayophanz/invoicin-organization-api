@@ -43,8 +43,8 @@ class Handler extends ExceptionHandler
         });
     }
 
-    protected function invalidJson($request, ValidationException $exception)
-    {
-        return $this->errorResponse($exception->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
+    // protected function invalidJson($request, ValidationException $exception)
+    // {
+    //     return $this->errorResponse($exception->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+    // }
 }

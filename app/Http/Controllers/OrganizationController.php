@@ -53,6 +53,7 @@ class OrganizationController extends Controller
      */
     public function orgValidate(StoreRequest $request)
     {
+        \Log::debug('test');
         return $this->successResponse(['success' => true], Response::HTTP_OK);;
     }
 
