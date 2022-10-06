@@ -23,12 +23,11 @@ class StoreRequest extends BaseRequest
      */
     public function rules()
     {
-        \Log::debug('test');
         return [
-            'logo.*'   => 'base64size:1MB|base64mimes:png,jpg,jpeg',
+            'logo.*'   => 'base64mimes:png,jpg,jpeg',
             'type'     => 'required',
             'name'     => 'required',
-            'orgEmail' => 'required|email|unique:users,email',
+            'orgEmail' => 'required|email|unique:organizations,email',
             'address'  => 'required',
             'city'     => 'required',
             'zipcode'  => 'required|numeric',

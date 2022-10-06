@@ -4,11 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
+use Illuminate\Contracts\Validation\Validator; 
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Traits\Restable;
+use App\Traits\ApiResponser;
 
 class BaseRequest extends FormRequest
 {
-    use Restable;
+    use Restable, ApiResponser;
 
     /**
      * Custom message for forbidden requests.
@@ -31,5 +34,10 @@ class BaseRequest extends FormRequest
             $this->forbidden_message,
             $this->forbidden_code
         );
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException($this->errorResponse($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

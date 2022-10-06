@@ -4,13 +4,10 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
-use App\Traits\ApiResponser;
 use Throwable;
 
 class Handler extends ExceptionHandler
-{
-    use ApiResponser;
-    
+{   
     /**
      * A list of the exception types that are not reported.
      *
@@ -42,9 +39,4 @@ class Handler extends ExceptionHandler
             //
         });
     }
-
-    // protected function invalidJson($request, ValidationException $exception)
-    // {
-    //     return $this->errorResponse($exception->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-    // }
 }
