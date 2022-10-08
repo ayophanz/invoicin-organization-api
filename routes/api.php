@@ -26,6 +26,7 @@ Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
         Route::get('countries', 'countries');
         Route::post('validate', 'orgValidate');
+        Route::post('verify', 'verifyOrganization');
         Route::post('store', 'store')->middleware(['auth']);
     });
     Route::group(['middleware' => ['auth', '2fa']], function () {

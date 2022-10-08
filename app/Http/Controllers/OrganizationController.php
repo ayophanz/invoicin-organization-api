@@ -14,6 +14,8 @@ use App\Traits\ApiResponser;
 use App\Http\Requests\Organization\StoreRequest;
 use Auth;
 use Image;
+use Carbon\Carbon;
+use Hashids\Hashids;
 
 class OrganizationController extends Controller
 {
@@ -62,7 +64,7 @@ class OrganizationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         $organization        = new Organization();
         $organization->name  = $request->name;
@@ -144,5 +146,21 @@ class OrganizationController extends Controller
                 })->all()
             ), 
         Response::HTTP_OK);
+    }
+
+    public function verifyOrganization(Request $request)
+    {
+        $hashids   = new Hashids();
+        $decodedID = $hashids->decode($request->token);
+
+        $organization = Organization::where('uuid', $decodedID)->first();
+        if ($organization->email_verified_at != null) {
+            return $this->successResponse(['Status' => 'Already verified'], Response::HTTP_OK);
+        }
+
+        $organization->email_verified_at = Carbon::now();
+        $organization->save();
+
+        return $this->successResponse(['Status' => 'Verified'], Response::HTTP_OK);
     }
 }

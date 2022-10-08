@@ -17,6 +17,7 @@ class CreateOrganizationsTable extends Migration
             $table->uuid('uuid')->primary();
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('type')->default('individual');
             $table->softDeletes();
             $table->timestamps();
