@@ -12,6 +12,7 @@ use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use App\Http\Requests\Organization\StoreRequest;
+use App\Events\RegisteredEvent;
 use Auth;
 use Image;
 use Carbon\Carbon;
@@ -78,6 +79,8 @@ class OrganizationController extends Controller
             \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
             Image::make($request->logo[0])->save($path . $logo);
         }
+
+        RegisteredEvent::dispatch($organization);
 
         return $this->successResponse($organization, Response::HTTP_OK);
     }
