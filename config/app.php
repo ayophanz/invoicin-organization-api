@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | API Gatewat URL
+    |--------------------------------------------------------------------------
+    |
+    | This value is the url of API gateway. This value is used when the
+    | framework needs to place the application's api gateway url in a notification or
+    | any other location as required by the application or its packages.
+    |
+    */
+
+    'APP_GATEWAY_URL' => env('APP_GATEWAY_URL', 'http://127.0.0.1:800'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

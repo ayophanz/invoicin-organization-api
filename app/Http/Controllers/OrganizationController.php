@@ -153,10 +153,7 @@ class OrganizationController extends Controller
 
     public function verifyOrganization(Request $request)
     {
-        $hashids   = new Hashids();
-        $decodedID = $hashids->decode($request->token);
-
-        $organization = Organization::where('uuid', $decodedID)->first();
+        $organization = Organization::where('uuid', $request->id)->first();
         if ($organization->email_verified_at != null) {
             return $this->successResponse(['Status' => 'Already verified'], Response::HTTP_OK);
         }

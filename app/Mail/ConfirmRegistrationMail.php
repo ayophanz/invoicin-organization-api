@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 use Hashids\Hashids;
 use App\Models\Organization;
 
@@ -33,9 +32,9 @@ class ConfirmRegistrationMail extends Mailable
      */
     public function build()
     {
-        $secretKey  = Str::random(40);
-        $hashids    = new Hashids($secretKey);
-        $verifyLink = config('APP_GATEWAY_URL') . '/verify-organization/' . $hashids->encode($this->organization->uuid);
+        $hashids    = new Hashids('secretkey', 12);
+        $trimDash   = base_convert($this->organization->uuid, 16, 10);
+        $verifyLink = config('app.APP_GATEWAY_URL') . '/verify-organization/' . $hashids->encodeHex($trimDash);
 
         return $this->subject('Verify Organization')
             ->with([ 'verify_link' => $verifyLink ])
