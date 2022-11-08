@@ -33,7 +33,7 @@ class ConfirmRegistrationMail extends Mailable
     public function build()
     {
         $hashids    = new Hashids('secretkey', 12);
-        $trimDash   = base_convert($this->organization->uuid, 16, 10);
+        $trimDash   = bin2hex($this->organization->uuid);
         $verifyLink = config('app.APP_GATEWAY_URL') . '/verify-organization/' . $hashids->encodeHex($trimDash);
 
         return $this->subject('Verify Organization')
