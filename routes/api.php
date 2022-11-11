@@ -27,10 +27,10 @@ Route::group(['prefix' => 'organization'], function () {
         Route::get('countries', 'countries');
         Route::post('validate', 'orgValidate');
         Route::post('verify', 'verifyOrganization');
-        Route::post('store', 'store')->middleware(['auth']);
     });
-    Route::group(['middleware' => ['auth', '2fa']], function () {
+    Route::group(['middleware' => ['auth']], function () {
         Route::controller(OrganizationController::class)->group( function () {
+            Route::post('store', 'store');
             Route::get('show', 'show');
             // Route::get('/settings', 'settings');
             // Route::get('/addresses', 'addresses');

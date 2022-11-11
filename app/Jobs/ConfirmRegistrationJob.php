@@ -35,6 +35,7 @@ class ConfirmRegistrationJob implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->organization->email)->send(new ConfirmRegistrationMail($this->organization));
+        Mail::to($this->organization->email, $this->organization->name)
+            ->send(new ConfirmRegistrationMail($this->organization));
     }
 }
