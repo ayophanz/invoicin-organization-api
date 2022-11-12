@@ -25,7 +25,6 @@ class StoreRequest extends BaseRequest
     {
         return [
             'logo.*'   => 'base64mimes:png,jpg,jpeg',
-            'type'     => 'required',
             'name'     => 'required',
             'orgEmail' => 'required|email|unique:organizations,email',
             'address'  => 'required',

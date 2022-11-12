@@ -70,7 +70,6 @@ class OrganizationController extends Controller
         $organization        = new Organization();
         $organization->name  = $request->name;
         $organization->email = $request->orgEmail;
-        $organization->type  = $request->type;
         $organization->save();
 
         if (count($request->logo) > 0) {
@@ -155,12 +154,12 @@ class OrganizationController extends Controller
     {
         $organization = Organization::where('uuid', $request->id)->first();
         if ($organization->email_verified_at != null) {
-            return $this->successResponse(['Status' => 'Already verified'], Response::HTTP_OK);
+            return $this->successResponse(['status' => 'Your organization is already verified!'], Response::HTTP_OK);
         }
 
         $organization->email_verified_at = Carbon::now();
         $organization->save();
 
-        return $this->successResponse(['Status' => 'Verified'], Response::HTTP_OK);
+        return $this->successResponse(['status' => 'Your organization is successfully verified!'], Response::HTTP_OK);
     }
 }
