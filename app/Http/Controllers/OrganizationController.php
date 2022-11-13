@@ -74,7 +74,7 @@ class OrganizationController extends Controller
 
         if (count($request->logo) > 0) {
             $logo = 'company.jpg';
-            $path = storage_path() . '/app/files/company_' . $organization->uuid. '/logo/';
+            $path = storage_path() . '/app/public/files/company_' . $organization->uuid. '/logo/';
             \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
             Image::make($request->logo[0])->save($path . $logo);
         }
