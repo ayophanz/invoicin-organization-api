@@ -14,7 +14,7 @@ class CountryTransformer extends BaseTransformer
     public function transform($item, $method = 'index') : array
     {
         return [
-            'id'   => $item->id,
+            'id'   => (int) $item->id,
             'code' => $item->code,
             'name' => $item->name,
         ];

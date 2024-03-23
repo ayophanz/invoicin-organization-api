@@ -86,9 +86,16 @@ class OrganizationSettingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        try {
+            $organization = Organization::find($this->auth->organization_id);
+            $setting      = $organization->settings()->where('key', $request->key)->first();
+
+            return $this->successResponse($this->transformer->transform($setting), Response::HTTP_OK);
+        } catch(\Exception $e) {
+            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

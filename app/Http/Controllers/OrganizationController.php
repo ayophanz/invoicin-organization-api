@@ -7,21 +7,25 @@ use Illuminate\Http\Response;
 use App\Models\Organization;
 use App\Models\OrganizationSetting;
 use App\Models\OrganizationAddress;
+use App\Models\Country;
 use App\Transformers\OrganizationTransformer;
+use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
+use App\Http\Requests\Organization\StoreRequest;
+use App\Events\RegisteredEvent;
 use Auth;
+use Image;
+use Carbon\Carbon;
+use Hashids\Hashids;
 
 class OrganizationController extends Controller
 {
     use ApiResponser;
-
-    protected $auth;
     protected $transformer;
 
     public function __construct(OrganizationTransformer $transformer)
     {
         $this->transformer = $transformer;
-        $this->auth        = Auth::user();
     }
     
     /**
@@ -45,18 +49,37 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Validate org registration request.
+     *
+     * @param  \Illuminate\Http\StoreRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function orgValidate(StoreRequest $request)
+    {
+        return $this->successResponse(['success' => true], Response::HTTP_OK);;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         $organization        = new Organization();
-        $organization->name  = $request->organization_name;
-        $organization->email = $request->organization_email;
-        $organization->type  = $request->organization_type;
+        $organization->name  = $request->name;
+        $organization->email = $request->orgEmail;
         $organization->save();
+
+        if (count($request->logo) > 0) {
+            $logo = 'company.jpg';
+            $path = storage_path() . '/app/public/files/company_' . $organization->uuid. '/logo/';
+            \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
+            Image::make($request->logo[0])->save($path . $logo);
+        }
+
+        RegisteredEvent::dispatch($organization);
 
         return $this->successResponse($organization, Response::HTTP_OK);
     }
@@ -69,7 +92,7 @@ class OrganizationController extends Controller
      */
     public function show()
     {
-        $organization = Organization::find($this->auth->organization_id);
+        $organization = Organization::find(Auth::user()->organization_id);
         return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
     }
 
@@ -105,5 +128,38 @@ class OrganizationController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * All countries.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function countries()
+    {
+        $countries = Country::get();
+        $this->transformer = new CountryTransformer();
+        ;
+        return $this->successResponse(
+            $this->transformer->transformCollection(
+                    $countries->transform(function($item, $key) {
+                    return $item;
+                })->all()
+            ), 
+        Response::HTTP_OK);
+    }
+
+    public function verifyOrganization(Request $request)
+    {
+        $organization = Organization::where('uuid', $request->id)->first();
+        if ($organization->email_verified_at != null) {
+            return $this->successResponse(['status' => 'Your organization is already verified!'], Response::HTTP_OK);
+        }
+
+        $organization->email_verified_at = Carbon::now();
+        $organization->save();
+
+        return $this->successResponse(['status' => 'Your organization is successfully verified!'], Response::HTTP_OK);
     }
 }

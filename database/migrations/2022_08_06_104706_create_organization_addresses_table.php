@@ -18,6 +18,8 @@ class CreateOrganizationAddressesTable extends Migration
             $table->foreignUuid('organization_uuid');
             $table->unsignedBigInteger('organization_address_type_id');
             $table->text('address');
+            $table->string('city');
+            $table->string('zipcode');
             $table->unsignedBigInteger('country_id');
             $table->timestamps();
         });

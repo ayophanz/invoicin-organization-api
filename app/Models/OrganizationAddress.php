@@ -14,6 +14,8 @@ class OrganizationAddress extends Model
         'organization_uuid',
         'organization_address_type_id',
         'address',
+        'city',
+        'zipcode',
         'country_id'
     ];
 
@@ -32,7 +34,7 @@ class OrganizationAddress extends Model
      *
      * @return BelongsTo The attached address type.
      */
-    public function organizationAddressType() : BelongsTo
+    public function addressType() : BelongsTo
     {
         return $this->belongsTo(OrganizationAddressType::class);
     }
