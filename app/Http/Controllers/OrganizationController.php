@@ -140,7 +140,7 @@ class OrganizationController extends Controller
     {
         $countries = Country::get();
         $this->transformer = new CountryTransformer();
-        ;
+
         return $this->successResponse(
             $this->transformer->transformCollection(
                     $countries->transform(function($item, $key) {
