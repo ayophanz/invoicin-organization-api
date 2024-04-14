@@ -20,13 +20,12 @@ class CreateOrganizationAddressesTable extends Migration
             $table->text('address');
             $table->string('city');
             $table->string('zipcode');
-            $table->unsignedBigInteger('country_id');
+            $table->string('country');
             $table->timestamps();
         });
 
         Schema::table('organization_addresses', function (Blueprint $table) {
             $table->foreign('organization_address_type_id')->references('id')->on('organization_address_types')->onDelete('cascade');
-            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
             $table->foreign('organization_uuid')->references('uuid')->on('organizations');
         });
     }

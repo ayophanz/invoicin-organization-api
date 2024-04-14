@@ -68,7 +68,7 @@ class OrganizationController extends Controller
     public function store(StoreRequest $request)
     {
         $organization        = new Organization();
-        $organization->name  = $request->name;
+        $organization->name  = $request->orgName;
         $organization->email = $request->orgEmail;
         $organization->save();
 
@@ -128,26 +128,6 @@ class OrganizationController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    /**
-     * All countries.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function countries()
-    {
-        $countries = Country::get();
-        $this->transformer = new CountryTransformer();
-
-        return $this->successResponse(
-            $this->transformer->transformCollection(
-                    $countries->transform(function($item, $key) {
-                    return $item;
-                })->all()
-            ), 
-        Response::HTTP_OK);
     }
 
     public function verifyOrganization(Request $request)

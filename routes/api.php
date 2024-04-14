@@ -24,7 +24,6 @@ use App\Http\Controllers\OrganizationSettingController;
 
 Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
-        Route::get('countries', 'countries');
         Route::post('validate', 'orgValidate');
         Route::post('verify', 'verifyOrganization');
     });
