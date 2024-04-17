@@ -6,24 +6,31 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Traits\ApiResponser;
-use App\Transformers\OrganizationSettingTransformer;
 use App\Models\Organization;
+use App\Models\Address;
+use App\Transformers\AddressTransformer;
+use App\Traits\ApiResponser;
 use Auth;
 
-class OrganizationSettingController extends Controller
+class AddressController extends Controller
 {
     use ApiResponser;
 
-    protected $auth;
     protected $transformer;
+    protected $auth;
 
-    public function __construct(OrganizationSettingTransformer $transformer)
+    /**
+     * Create a new middleware instance.
+     *
+     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @return void
+     */
+    public function __construct(AddressTransformer $transformer)
     {
         $this->transformer = $transformer;
-        $this->auth        = Auth::user();
+        $this->auth = Auth::user();
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -52,14 +59,19 @@ class OrganizationSettingController extends Controller
      */
     public function store(Request $request)
     {
-         /** Validation here */
-         $toValidate = [
-            'value' => 'required',
-            'key'   => [
+        /** Validation here */
+        $toValidate = [
+            'country'         => 'required',
+            'state_province'  => 'required',
+            'city'            => 'required',
+            'zipcode'         => 'required',
+            'address'         => 'required|string',
+            'address_type_id' => [
                 'required',
-                Rule::unique('organization_settings')
+                'numeric',
+                Rule::unique('addresses')
                     ->using(function ($q) { 
-                        $q->where('sourceable_id', $this->auth->organization_id)->where('sourceable_type', 'App\Models\Organization'); 
+                        $q->where('organization_uuid', $this->auth->organization_id);
                     })
             ],
         ];
@@ -69,15 +81,19 @@ class OrganizationSettingController extends Controller
         try {
             /** Save here */
             $organization = Organization::find($this->auth->organization_id);
-            $setting      = $organization->settings()->create([
-                'key'   => $request->key,
-                'value' => $request->value,
+            $address      =  $organization->addresses()->create([
+                'address_type_id' => $request->address_type_id,
+                'country'         => $request->country,
+                'state_province'  => $request->state_province,
+                'city'            => $request->city,
+                'zipcode'         => $request->zipcode,
+                'address'         => $request->address,
             ]);
 
-            return $this->successResponse($this->transformer->transform($setting), Response::HTTP_OK);
+            return $this->successResponse($this->transformer->transform($address), Response::HTTP_CREATED);
         } catch(\Exception $e) {
             return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        }   
     }
 
     /**
@@ -90,9 +106,9 @@ class OrganizationSettingController extends Controller
     {
         try {
             $organization = Organization::find($this->auth->organization_id);
-            $setting      = $organization->settings()->where('key', $request->key)->first();
+            $address      = $organization->addresses()->where('address_type_id', $request->address_type_id)->first();
 
-            return $this->successResponse($this->transformer->transform($setting), Response::HTTP_OK);
+            return $this->successResponse($this->transformer->transform($address), Response::HTTP_OK);
         } catch(\Exception $e) {
             return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -118,22 +134,38 @@ class OrganizationSettingController extends Controller
      */
     public function update(Request $request)
     {
-        /** Validation here */
-        $toValidate = [
-            'key'   => 'required',
-            'value' => 'required',
+         /** Validation here */
+         $toValidate = [
+            'country'         => 'required',
+            'state_province'  => 'required',
+            'city'            => 'required',
+            'zipcode'         => 'required',
+            'address'         => 'required|string',
+            'address_type_id' => [
+                'required',
+                'numeric',
+                Rule::unique('addresses')
+                    ->using(function ($q) { 
+                        $q->where('organization_uuid', $this->auth->organization_id); 
+                    })->ignore($request->address_type_id, 'address_type_id')
+            ],
         ];
         $validator = Validator::make($request->all(), $toValidate);
         if ($validator->fails()) return $this->errorResponse($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
 
         try {
             /** Update here */
-            $organization = Organization::find( $this->auth->organization_id);
-            $setting      = tap($organization->settings()->where('key', $request->key))->update([
-                'value' => $request->value
-            ])->first();
+            $organization = Organization::find($this->auth->organization_id);
+            $address      = tap($organization->addresses()->where('address_type_id', $request->address_type_id))
+                ->update([
+                    'country'         => $request->country,
+                    'state_province'  => $request->state_province,
+                    'city'            => $request->city,
+                    'zipcode'         => $request->zipcode,
+                    'address'         => $request->address,
+                ])->first();
 
-            return $this->successResponse($this->transformer->transform($setting), Response::HTTP_OK);
+            return $this->successResponse($this->transformer->transform($address), Response::HTTP_OK);
         } catch(\Exception $e) {
             return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -149,9 +181,9 @@ class OrganizationSettingController extends Controller
     {
         try {
             $organization = Organization::find($this->auth->organization_id);
-            $setting      = $organization->settings()->where('key', $request->key)->delete();
+            $address      = $organization->addresses()->where('address_type_id', $request->address_type_id)->delete();
 
-            return $this->successResponse(['Success' => $setting ? true : false], Response::HTTP_OK);
+            return $this->successResponse(['Success' => $address ? true : false], Response::HTTP_OK);
         } catch(\Exception $e) {
             return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

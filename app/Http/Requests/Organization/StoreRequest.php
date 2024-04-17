@@ -24,14 +24,14 @@ class StoreRequest extends BaseRequest
     public function rules()
     {
         return [
-            'logo.*'   => 'base64mimes:png,jpg,jpeg,webp',
-            'orgName'     => 'required',
-            'orgEmail' => 'required|email|unique:organizations,email',
-            'address'  => 'required',
-            'city'     => 'required',
-            'zipcode'  => 'required|numeric',
+            'logo.*'          => 'base64mimes:png,jpg,jpeg,webp',
+            'orgName'         => 'required',
+            'orgEmail'        => 'required|email|unique:organizations,email',
+            'address'         => 'required',
+            'city'            => 'required',
+            'zipcode'         => 'required|numeric',
             'state_province'  => 'required',
-            'country'  => 'required',
+            'country'         => 'required',
         ];
     }
 }

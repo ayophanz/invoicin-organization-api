@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrganizationAddressesTable extends Migration
+class CreateAddressesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,20 @@ class CreateOrganizationAddressesTable extends Migration
      */
     public function up()
     {
-        Schema::create('organization_addresses', function (Blueprint $table) {
+        Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('organization_uuid');
-            $table->unsignedBigInteger('organization_address_type_id');
-            $table->text('address');
+            $table->unsignedBigInteger('address_type_id');
+            $table->string('country');
+            $table->string('state_province');
             $table->string('city');
             $table->string('zipcode');
-            $table->string('country');
+            $table->text('address');
             $table->timestamps();
         });
 
-        Schema::table('organization_addresses', function (Blueprint $table) {
-            $table->foreign('organization_address_type_id')->references('id')->on('organization_address_types')->onDelete('cascade');
+        Schema::table('addresses', function (Blueprint $table) {
+            $table->foreign('address_type_id')->references('id')->on('address_types')->onDelete('cascade');
             $table->foreign('organization_uuid')->references('uuid')->on('organizations');
         });
     }
@@ -37,6 +38,6 @@ class CreateOrganizationAddressesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('organization_addresses');
+        Schema::dropIfExists('addresses');
     }
 }

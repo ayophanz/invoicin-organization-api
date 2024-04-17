@@ -12,7 +12,7 @@ class OrganizationAddress extends Model
 
     protected $fillable = [
         'organization_uuid',
-        'organization_address_type_id',
+        'address_type_id',
         'address',
         'city',
         'zipcode',
@@ -21,8 +21,6 @@ class OrganizationAddress extends Model
 
     /**
      * An address belongs to a organization
-     *
-     * @return BelongsTo The attached organization.
      */
     public function organization() : BelongsTo
     {
@@ -31,21 +29,9 @@ class OrganizationAddress extends Model
 
     /**
      * An address belongs to a address type.
-     *
-     * @return BelongsTo The attached address type.
      */
     public function addressType() : BelongsTo
     {
-        return $this->belongsTo(OrganizationAddressType::class);
-    }
-
-    /**
-     * An address belongs to a country.
-     *
-     * @return BelongsTo The attached address type.
-     */
-    public function country() : BelongsTo
-    {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(AddressType::class);
     }
 }

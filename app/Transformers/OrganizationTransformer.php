@@ -18,8 +18,7 @@ class OrganizationTransformer extends BaseTransformer
             'name'              => $item->name,
             'email'             => $item->email,
             'email_verified_at' => $item->email_verified_at,
-            'addresses'         => $item->addresses ? (array) $this->relationTransformer($item->addresses, new OrganizationAddressTransformer) : [],
-            'settings'          => $item->settings ? (array) $this->relationTransformer($item->settings, new OrganizationSettingTransformer) : [],
+            'addresses'         => $item->addresses ? (array) $this->relationTransformer($item->addresses, new AddressTransformer) : [],
         ];
     }
 }

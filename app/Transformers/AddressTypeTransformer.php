@@ -2,7 +2,7 @@
 
 namespace App\Transformers;
 
-class OrganizationAddressTypeTransformer extends BaseTransformer
+class AddressTypeTransformer extends BaseTransformer
 {
     /**
      * Transformer for Organization address type.
