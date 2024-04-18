@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\OrganizationAddressController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrganizationSettingController;
 
 /*
@@ -34,7 +34,7 @@ Route::group(['prefix' => 'organization'], function () {
             // Route::get('/settings', 'settings');
             // Route::get('/addresses', 'addresses');
         });
-        Route::controller(OrganizationAddressController::class)->group( function () {
+        Route::controller(AddressController::class)->group( function () {
             Route::get('addresses/show', 'show');
             Route::post('addresses/store', 'store');
             Route::put('addresses/update', 'update');

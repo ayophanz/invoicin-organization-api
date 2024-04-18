@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Organization;
 use App\Models\OrganizationSetting;
-use App\Models\OrganizationAddress;
+use App\Models\Address;
 use App\Models\Country;
 use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
@@ -68,8 +68,8 @@ class OrganizationController extends Controller
     public function store(StoreRequest $request)
     {
         $organization        = new Organization();
-        $organization->name  = $request->orgName;
-        $organization->email = $request->orgEmail;
+        $organization->name  = $request->organization_name;
+        $organization->email = $request->organization_email;
         $organization->save();
 
         if (count($request->logo) > 0) {
