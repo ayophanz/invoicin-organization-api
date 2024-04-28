@@ -12,6 +12,7 @@ use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use App\Http\Requests\Organization\StoreRequest;
+use App\Http\Requests\Organization\UpdateProfileRequest;
 use App\Events\RegisteredEvent;
 use Auth;
 use Image;
@@ -56,7 +57,7 @@ class OrganizationController extends Controller
      */
     public function orgValidate(StoreRequest $request)
     {
-        return $this->successResponse(['success' => true], Response::HTTP_OK);;
+        return $this->successResponse(['success' => true], Response::HTTP_OK);
     }
 
     /**
@@ -97,26 +98,19 @@ class OrganizationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $organization
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateProfile(UpdateProfileRequest $request, Organization $organization)
     {
-        //
+        $organization->name = $request->name;
+        $organization->email = $request->email;
+        $organization->save();
+
+        return $this->successResponse(['success' => true], Response::HTTP_OK);
     }
 
     /**
