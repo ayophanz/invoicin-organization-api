@@ -94,7 +94,26 @@ class OrganizationController extends Controller
     public function show()
     {
         $organization = Organization::find(Auth::user()->organization_id);
-        return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+        if ($organization)
+            return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Show the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $organization
+     * @return \Illuminate\Http\Response
+     */
+    public function showProfile(Request $request)
+    {
+        $organization = Organization::find(Auth::user()->organization_id);
+        if ($organization)
+            return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -104,13 +123,18 @@ class OrganizationController extends Controller
      * @param  int  $organization
      * @return \Illuminate\Http\Response
      */
-    public function updateProfile(UpdateProfileRequest $request, Organization $organization)
+    public function updateProfile(UpdateProfileRequest $request)
     {
-        $organization->name = $request->name;
-        $organization->email = $request->email;
-        $organization->save();
+        $organization = Organization::find(Auth::user()->organization_id);
+        if ($organization) {
+            $organization->name = $request->name;
+            $organization->email = $request->email;
+            $organization->save();
 
-        return $this->successResponse(['success' => true], Response::HTTP_OK);
+            return $this->successResponse(['success' => true], Response::HTTP_OK);
+        }
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**

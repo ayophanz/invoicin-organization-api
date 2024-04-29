@@ -31,7 +31,8 @@ Route::group(['prefix' => 'organization'], function () {
         Route::controller(OrganizationController::class)->group( function () {
             Route::post('store', 'store');
             Route::get('show', 'show');
-            Route::put('profile/update/{organization}', 'updateProfile');
+            Route::get('profile/show', 'showProfile');
+            Route::put('profile/update', 'updateProfile');
             // Route::get('/settings', 'settings');
             // Route::get('/addresses', 'addresses');
         });
