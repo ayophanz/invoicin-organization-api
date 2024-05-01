@@ -9,11 +9,11 @@ use App\Models\Organization;
 use App\Models\OrganizationSetting;
 use App\Models\Address;
 use App\Models\Country;
-use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use App\Http\Requests\Organization\StoreRequest;
 use App\Http\Requests\Organization\UpdateProfileRequest;
+use App\Http\Resources\OrganizationResource;
 use App\Events\RegisteredEvent;
 use Auth;
 use Image;
@@ -23,11 +23,10 @@ use Hashids\Hashids;
 class OrganizationController extends Controller
 {
     use ApiResponser;
-    protected $transformer;
 
-    public function __construct(OrganizationTransformer $transformer)
+    public function __construct()
     {
-        $this->transformer = $transformer;
+        //
     }
     
     /**
@@ -74,13 +73,6 @@ class OrganizationController extends Controller
         $organization->email = $request->organization_email;
         $organization->save();
 
-        if (count($request->logo) > 0) {
-            $logo = 'company.jpg';
-            $path = storage_path() . '/app/public/files/company_' . $organization->uuid. '/logo/';
-            \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
-            Image::make($request->logo[0])->save($path . $logo);
-        }
-
         RegisteredEvent::dispatch($organization);
 
         return $this->successResponse($organization, Response::HTTP_OK);
@@ -96,7 +88,7 @@ class OrganizationController extends Controller
     {
         $organization = Organization::find(Auth::user()->organization_id);
         if ($organization)
-            return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+            return new OrganizationResource($organization);
 
         return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
@@ -112,7 +104,7 @@ class OrganizationController extends Controller
     {
         $organization = Organization::find(Auth::user()->organization_id);
         if ($organization)
-            return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+            return new OrganizationResource($organization);
 
         return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }

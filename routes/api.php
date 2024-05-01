@@ -32,21 +32,15 @@ Route::group(['prefix' => 'organization'], function () {
             Route::post('store', 'store');
             Route::get('show', 'show');
             Route::get('profile/show', 'showProfile');
-            Route::put('profile/update', 'updateProfile');
-            // Route::get('/settings', 'settings');
-            // Route::get('/addresses', 'addresses');
+            Route::put('profile/update', 'updateProfile');        
         });
+        
         Route::controller(AddressController::class)->group( function () {
+            Route::get('addresses', 'index');
             Route::get('addresses/show', 'show');
             Route::post('addresses/store', 'store');
             Route::put('addresses/update', 'update');
             Route::delete('addresses/destroy', 'destroy');
-        });
-        Route::controller(OrganizationSettingController::class)->group( function () {
-            Route::get('settings/show', 'show');
-            Route::post('settings/store', 'store');
-            Route::put('settings/update', 'update');
-            Route::delete('settings/destroy', 'destroy');
         });
     });
 });

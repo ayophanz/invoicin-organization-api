@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Http\Resources\Address\AddressResource;
+use App\Http\Resources\Address\AddressCollection;
 use App\Models\Organization;
 use App\Models\Address;
-use App\Transformers\AddressTransformer;
 use App\Traits\ApiResponser;
 use Auth;
 
@@ -16,7 +17,6 @@ class AddressController extends Controller
 {
     use ApiResponser;
 
-    protected $transformer;
     protected $auth;
 
     /**
@@ -25,9 +25,8 @@ class AddressController extends Controller
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(AddressTransformer $transformer)
+    public function __construct()
     {
-        $this->transformer = $transformer;
         $this->auth = Auth::user();
     }
     
@@ -38,17 +37,10 @@ class AddressController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $organization = Organization::find($this->auth->organization_id);
+        $addresses    = $organization->addresses()->get();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new AddressCollection($addresses);
     }
 
     /**
@@ -104,14 +96,7 @@ class AddressController extends Controller
      */
     public function show(Request $request)
     {
-        try {
-            $organization = Organization::find($this->auth->organization_id);
-            $address      = $organization->addresses()->where('address_type_id', $request->address_type_id)->first();
-
-            return $this->successResponse($this->transformer->transform($address), Response::HTTP_OK);
-        } catch(\Exception $e) {
-            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+       //
     }
 
     /**
@@ -134,41 +119,7 @@ class AddressController extends Controller
      */
     public function update(Request $request)
     {
-         /** Validation here */
-         $toValidate = [
-            'country'         => 'required',
-            'state_province'  => 'required',
-            'city'            => 'required',
-            'zipcode'         => 'required',
-            'address'         => 'required|string',
-            'address_type_id' => [
-                'required',
-                'numeric',
-                Rule::unique('addresses')
-                    ->using(function ($q) { 
-                        $q->where('organization_uuid', $this->auth->organization_id); 
-                    })->ignore($request->address_type_id, 'address_type_id')
-            ],
-        ];
-        $validator = Validator::make($request->all(), $toValidate);
-        if ($validator->fails()) return $this->errorResponse($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        try {
-            /** Update here */
-            $organization = Organization::find($this->auth->organization_id);
-            $address      = tap($organization->addresses()->where('address_type_id', $request->address_type_id))
-                ->update([
-                    'country'         => $request->country,
-                    'state_province'  => $request->state_province,
-                    'city'            => $request->city,
-                    'zipcode'         => $request->zipcode,
-                    'address'         => $request->address,
-                ])->first();
-
-            return $this->successResponse($this->transformer->transform($address), Response::HTTP_OK);
-        } catch(\Exception $e) {
-            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+         //
     }
 
     /**
@@ -179,13 +130,6 @@ class AddressController extends Controller
      */
     public function destroy(Request $request)
     {
-        try {
-            $organization = Organization::find($this->auth->organization_id);
-            $address      = $organization->addresses()->where('address_type_id', $request->address_type_id)->delete();
-
-            return $this->successResponse(['Success' => $address ? true : false], Response::HTTP_OK);
-        } catch(\Exception $e) {
-            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        //
     }
 }
