@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Organization;
 
 use App\Http\Requests\BaseRequest;
+use Auth;
 
 class UpdateProfileRequest extends BaseRequest
 {
@@ -13,7 +14,8 @@ class UpdateProfileRequest extends BaseRequest
      */
     public function authorize()
     {
-        return true;
+        if (Auth::check()) return true;
+        return false;
     }
 
     /**
@@ -26,7 +28,7 @@ class UpdateProfileRequest extends BaseRequest
         return [
             'logo.*' => 'base64mimes:png,jpg,jpeg,webp',
             'name'   => 'required',
-            'email'  => 'required|email|unique:organizations,email,'.$this->organization->id,
+            'email'  => 'required|email|unique:organizations,email,'.Auth::user()->organization_id.',uuid',
         ];
     }
 }

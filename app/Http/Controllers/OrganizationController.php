@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use App\Models\Organization;
 use App\Models\OrganizationSetting;
 use App\Models\Address;
@@ -130,6 +131,25 @@ class OrganizationController extends Controller
             $organization->name = $request->name;
             $organization->email = $request->email;
             $organization->save();
+
+            if (count($request->logo) > 0) {
+                if ($organization->image_path !== null && $organization->image_path !== '' && \File::exists($organization->image_path))
+                    unlink(public_path() . $organization->image_path);
+    
+                $image = Image::make($request->logo[0]);
+                $ext = (new \Symfony\Component\Mime\MimeTypes)->getExtensions($image->mime());
+    
+                $hashids = new Hashids('secretkey', 4);
+                $strRandom = Str::random(4) . $hashids->encode($organization->uuid);
+    
+                $path = storage_path() . '/app/public/files/images/'.$organization->uuid.'/';
+                \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
+                $filePath = $path . 'logo-'.$strRandom.'.'.$ext[0];
+                $image->save($filePath);
+    
+                $organization->image_path = '/storage/files/images/'.$organization->uuid.'/logo-'.$strRandom.'.'.$ext[0];
+                $organization->save();
+            }
 
             return $this->successResponse(['success' => true], Response::HTTP_OK);
         }

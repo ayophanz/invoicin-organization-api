@@ -18,7 +18,7 @@ class OrganizationTransformer extends BaseTransformer
             return [
                 'name' => $item->name,
                 'email'=> $item->email,
-                'logo' => ''
+                'logo' => [config('app.project_url') . $item->image_path],
             ];
         }
 
