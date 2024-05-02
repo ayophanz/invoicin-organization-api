@@ -15,8 +15,9 @@ class Address extends Model
         'address_type_id',
         'address',
         'city',
+        'state_province',
         'zipcode',
-        'country_id'
+        'country'
     ];
 
     /**

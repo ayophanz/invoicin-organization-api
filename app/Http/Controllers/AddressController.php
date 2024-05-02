@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Http\Resources\Address\AddressResource;
 use App\Http\Resources\Address\AddressCollection;
+use App\Http\Requests\Address\UpdateRequest;
 use App\Models\Organization;
 use App\Models\Address;
+use App\Models\AddressType;
 use App\Traits\ApiResponser;
 use Auth;
 
@@ -51,41 +53,7 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
-        /** Validation here */
-        $toValidate = [
-            'country'         => 'required',
-            'state_province'  => 'required',
-            'city'            => 'required',
-            'zipcode'         => 'required',
-            'address'         => 'required|string',
-            'address_type_id' => [
-                'required',
-                'numeric',
-                Rule::unique('addresses')
-                    ->using(function ($q) { 
-                        $q->where('organization_uuid', $this->auth->organization_id);
-                    })
-            ],
-        ];
-        $validator = Validator::make($request->all(), $toValidate);
-        if ($validator->fails()) return $this->errorResponse($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        try {
-            /** Save here */
-            $organization = Organization::find($this->auth->organization_id);
-            $address      =  $organization->addresses()->create([
-                'address_type_id' => $request->address_type_id,
-                'country'         => $request->country,
-                'state_province'  => $request->state_province,
-                'city'            => $request->city,
-                'zipcode'         => $request->zipcode,
-                'address'         => $request->address,
-            ]);
-
-            return $this->successResponse($this->transformer->transform($address), Response::HTTP_CREATED);
-        } catch(\Exception $e) {
-            return $this->errorResponse(['Error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }   
+        //  
     }
 
     /**
@@ -100,26 +68,31 @@ class AddressController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(UpdateRequest $request)
     {
-         //
+        $organization = Organization::find($this->auth->organization_id);
+        $addressType = AddressType::where('name', $request->type)->first();
+        $organization->addresses()->updateOrCreate(
+            [
+                'address_type_id'   => $addressType->id,
+                'organization_uuid' => $organization->id
+            ],
+            [
+                'country'         => $request->country,
+                'state_province'  => $request->state_province,
+                'city'            => $request->city,
+                'zipcode'         => $request->zipcode,
+                'address'         => $request->address,
+            ]
+        );
+
+        return $this->successResponse(['success' => true], Response::HTTP_OK);
     }
 
     /**

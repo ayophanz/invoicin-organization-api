@@ -37,10 +37,7 @@ Route::group(['prefix' => 'organization'], function () {
         
         Route::controller(AddressController::class)->group( function () {
             Route::get('addresses', 'index');
-            Route::get('addresses/show', 'show');
-            Route::post('addresses/store', 'store');
-            Route::put('addresses/update', 'update');
-            Route::delete('addresses/destroy', 'destroy');
+            Route::put('addresses', 'update');
         });
     });
 });

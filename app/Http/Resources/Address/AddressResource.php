@@ -15,13 +15,12 @@ class AddressResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'address_type_id' => $this->address_type_id,
-            'address_type'    => $this->addressType()->select('id', 'name'),
-            'country'         => $this->country,
-            'state_province'  => $this->state_province,
-            'city'            => $this->city,
-            'zipcode'         => $this->zipcode,
-            'address'         => $this->address
+            'type'           => $this->addressType()->select('id', 'name')->first(),
+            'country'        => $this->country,
+            'state_province' => $this->state_province,
+            'city'           => $this->city,
+            'zipcode'        => $this->zipcode,
+            'address'        => $this->address
         ];
     }
 }
