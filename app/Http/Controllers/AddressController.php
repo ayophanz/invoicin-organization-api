@@ -81,7 +81,7 @@ class AddressController extends Controller
         $organization->addresses()->updateOrCreate(
             [
                 'address_type_id'   => $addressType->id,
-                'organization_uuid' => $organization->id
+                'organization_uuid' => $organization->uuid
             ],
             [
                 'country'         => $request->country,
