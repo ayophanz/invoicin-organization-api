@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\OrganizationAddressType;
+use App\Models\AddressType;
 
-class OrganizationAddressTypeSeeder extends Seeder
+class AddressTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,11 +15,11 @@ class OrganizationAddressTypeSeeder extends Seeder
      */
     public function run()
     {
-        OrganizationAddressType::firstOrCreate([
+        AddressType::firstOrCreate([
             'name' => 'Billing'
         ]);
-        OrganizationAddressType::firstOrCreate([
-            'name' => 'Shipping'
+        AddressType::firstOrCreate([
+            'name' => 'Postal'
         ]);
     }
 }

@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use App\Models\Organization;
 use App\Models\OrganizationSetting;
-use App\Models\OrganizationAddress;
+use App\Models\Address;
 use App\Models\Country;
-use App\Transformers\OrganizationTransformer;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
 use App\Http\Requests\Organization\StoreRequest;
+use App\Http\Requests\Organization\UpdateProfileRequest;
+use App\Http\Resources\OrganizationResource;
 use App\Events\RegisteredEvent;
 use Auth;
 use Image;
@@ -21,11 +23,10 @@ use Hashids\Hashids;
 class OrganizationController extends Controller
 {
     use ApiResponser;
-    protected $transformer;
 
-    public function __construct(OrganizationTransformer $transformer)
+    public function __construct()
     {
-        $this->transformer = $transformer;
+        //
     }
     
     /**
@@ -56,7 +57,7 @@ class OrganizationController extends Controller
      */
     public function orgValidate(StoreRequest $request)
     {
-        return $this->successResponse(['success' => true], Response::HTTP_OK);;
+        return $this->successResponse(['success' => true], Response::HTTP_OK);
     }
 
     /**
@@ -68,16 +69,9 @@ class OrganizationController extends Controller
     public function store(StoreRequest $request)
     {
         $organization        = new Organization();
-        $organization->name  = $request->name;
-        $organization->email = $request->orgEmail;
+        $organization->name  = $request->organization_name;
+        $organization->email = $request->organization_email;
         $organization->save();
-
-        if (count($request->logo) > 0) {
-            $logo = 'company.jpg';
-            $path = storage_path() . '/app/public/files/company_' . $organization->uuid. '/logo/';
-            \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
-            Image::make($request->logo[0])->save($path . $logo);
-        }
 
         RegisteredEvent::dispatch($organization);
 
@@ -93,30 +87,66 @@ class OrganizationController extends Controller
     public function show()
     {
         $organization = Organization::find(Auth::user()->organization_id);
-        return $this->successResponse($this->transformer->transform($organization), Response::HTTP_OK);
+        if ($organization)
+            return new OrganizationResource($organization);
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the specified resource in storage.
      *
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $organization
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function showProfile(Request $request)
     {
-        //
+        $organization = Organization::find(Auth::user()->organization_id);
+        if ($organization)
+            return new OrganizationResource($organization);
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $organization
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateProfile(UpdateProfileRequest $request)
     {
-        //
+        $organization = Organization::find(Auth::user()->organization_id);
+        if ($organization) {
+            $organization->name = $request->name;
+            $organization->email = $request->email;
+            $organization->save();
+
+            if (count($request->logo) > 0) {
+                if ($organization->image_path !== null && $organization->image_path !== '' && \File::exists($organization->image_path))
+                    unlink(public_path() . $organization->image_path);
+    
+                $image = Image::make($request->logo[0]);
+                $ext = (new \Symfony\Component\Mime\MimeTypes)->getExtensions($image->mime());
+    
+                $hashids = new Hashids('secretkey', 4);
+                $strRandom = Str::random(4) . $hashids->encode($organization->uuid);
+    
+                $path = storage_path() . '/app/public/files/images/'.$organization->uuid.'/';
+                \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
+                $filePath = $path . 'logo-'.$strRandom.'.'.$ext[0];
+                $image->save($filePath);
+    
+                $organization->image_path = '/storage/files/images/'.$organization->uuid.'/logo-'.$strRandom.'.'.$ext[0];
+                $organization->save();
+            }
+
+            return $this->successResponse(['success' => true], Response::HTTP_OK);
+        }
+
+        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -128,26 +158,6 @@ class OrganizationController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    /**
-     * All countries.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function countries()
-    {
-        $countries = Country::get();
-        $this->transformer = new CountryTransformer();
-
-        return $this->successResponse(
-            $this->transformer->transformCollection(
-                    $countries->transform(function($item, $key) {
-                    return $item;
-                })->all()
-            ), 
-        Response::HTTP_OK);
     }
 
     public function verifyOrganization(Request $request)
