@@ -11,6 +11,7 @@ use App\Models\Address;
 use App\Models\Country;
 use App\Transformers\CountryTransformer;
 use App\Traits\ApiResponser;
+use App\Traits\ImageTrait;
 use App\Http\Requests\Organization\StoreRequest;
 use App\Http\Requests\Organization\UpdateProfileRequest;
 use App\Http\Resources\OrganizationResource;
@@ -23,6 +24,7 @@ use Hashids\Hashids;
 class OrganizationController extends Controller
 {
     use ApiResponser;
+    use ImageTrait;
 
     public function __construct()
     {
@@ -125,22 +127,7 @@ class OrganizationController extends Controller
             $organization->save();
 
             if (count($request->logo) > 0) {
-                if ($organization->image_path !== null && $organization->image_path !== '' && \File::exists($organization->image_path))
-                    unlink(public_path() . $organization->image_path);
-    
-                $image = Image::make($request->logo[0]);
-                $ext = (new \Symfony\Component\Mime\MimeTypes)->getExtensions($image->mime());
-    
-                $hashids = new Hashids('secretkey', 4);
-                $strRandom = Str::random(4) . $hashids->encode($organization->uuid);
-    
-                $path = storage_path() . '/app/public/files/images/'.$organization->uuid.'/';
-                \File::isDirectory($path) or \File::makeDirectory($path, 0777, true, true);
-                $filePath = $path . 'logo-'.$strRandom.'.'.$ext[0];
-                $image->save($filePath);
-    
-                $organization->image_path = '/storage/files/images/'.$organization->uuid.'/logo-'.$strRandom.'.'.$ext[0];
-                $organization->save();
+                $this->storeImage($organization, $request->logo[0]);
             }
 
             return $this->successResponse(['success' => true], Response::HTTP_OK);
