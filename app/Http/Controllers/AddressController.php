@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Http\Resources\Address\AddressResource;
-use App\Http\Resources\Address\AddressCollection;
 use App\Http\Requests\Address\UpdateRequest;
-use App\Models\Organization;
-use App\Models\Address;
+use App\Http\Resources\Address\AddressCollection;
 use App\Models\AddressType;
+use App\Models\Organization;
 use App\Traits\ApiResponser;
 use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AddressController extends Controller
 {
@@ -31,7 +27,7 @@ class AddressController extends Controller
     {
         $this->auth = Auth::user();
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -40,7 +36,7 @@ class AddressController extends Controller
     public function index()
     {
         $organization = Organization::find($this->auth->organization_id);
-        $addresses    = $organization->addresses()->get();
+        $addresses = $organization->addresses()->get();
 
         return new AddressCollection($addresses);
     }
@@ -48,12 +44,11 @@ class AddressController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //  
+        //
     }
 
     /**
@@ -64,7 +59,7 @@ class AddressController extends Controller
      */
     public function show(Request $request)
     {
-       //
+        //
     }
 
     /**
@@ -80,15 +75,15 @@ class AddressController extends Controller
         $addressType = AddressType::where('name', $request->type)->first();
         $organization->addresses()->updateOrCreate(
             [
-                'address_type_id'   => $addressType->id,
-                'organization_uuid' => $organization->uuid
+                'address_type_id' => $addressType->id,
+                'organization_uuid' => $organization->uuid,
             ],
             [
-                'country'         => $request->country,
-                'state_province'  => $request->state_province,
-                'city'            => $request->city,
-                'zipcode'         => $request->zipcode,
-                'address'         => $request->address,
+                'country' => $request->country,
+                'state_province' => $request->state_province,
+                'city' => $request->city,
+                'zipcode' => $request->zipcode,
+                'address' => $request->address,
             ]
         );
 
