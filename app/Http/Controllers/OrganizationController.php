@@ -2,24 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Str;
-use App\Models\Organization;
-use App\Models\OrganizationSetting;
-use App\Models\Address;
-use App\Models\Country;
-use App\Transformers\CountryTransformer;
-use App\Traits\ApiResponser;
-use App\Traits\ImageTrait;
+use App\Events\RegisteredEvent;
 use App\Http\Requests\Organization\StoreRequest;
 use App\Http\Requests\Organization\UpdateProfileRequest;
 use App\Http\Resources\OrganizationResource;
-use App\Events\RegisteredEvent;
+use App\Models\Organization;
+use App\Traits\ApiResponser;
+use App\Traits\ImageTrait;
 use Auth;
-use Image;
 use Carbon\Carbon;
-use Hashids\Hashids;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class OrganizationController extends Controller
 {
@@ -30,7 +23,7 @@ class OrganizationController extends Controller
     {
         //
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -54,7 +47,7 @@ class OrganizationController extends Controller
     /**
      * Validate org registration request.
      *
-     * @param  \Illuminate\Http\StoreRequest $request
+     * @param  \Illuminate\Http\StoreRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function orgValidate(StoreRequest $request)
@@ -70,8 +63,8 @@ class OrganizationController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $organization        = new Organization();
-        $organization->name  = $request->organization_name;
+        $organization = new Organization();
+        $organization->name = $request->organization_name;
         $organization->email = $request->organization_email;
         $organization->save();
 
@@ -89,8 +82,9 @@ class OrganizationController extends Controller
     public function show()
     {
         $organization = Organization::find(Auth::user()->organization_id);
-        if ($organization)
+        if ($organization) {
             return new OrganizationResource($organization);
+        }
 
         return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
@@ -98,15 +92,15 @@ class OrganizationController extends Controller
     /**
      * Show the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $organization
      * @return \Illuminate\Http\Response
      */
     public function showProfile(Request $request)
     {
         $organization = Organization::find(Auth::user()->organization_id);
-        if ($organization)
+        if ($organization) {
             return new OrganizationResource($organization);
+        }
 
         return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
@@ -151,12 +145,12 @@ class OrganizationController extends Controller
     {
         $organization = Organization::where('uuid', $request->id)->first();
         if ($organization->email_verified_at != null) {
-            return $this->successResponse(['status' => 'Your organization is already verified!'], Response::HTTP_OK);
+            return $this->successResponse(['status' => 'Your organization is already verified!', 'email_verified_at' => $organization->email_verified_at], Response::HTTP_OK);
         }
 
         $organization->email_verified_at = Carbon::now();
         $organization->save();
 
-        return $this->successResponse(['status' => 'Your organization is successfully verified!'], Response::HTTP_OK);
+        return $this->successResponse(['status' => 'Your organization is successfully verified!', 'email_verified_at' => $organization->email_verified_at], Response::HTTP_OK);
     }
 }
