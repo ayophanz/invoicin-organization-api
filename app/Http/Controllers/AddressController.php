@@ -35,7 +35,7 @@ class AddressController extends Controller
      */
     public function index()
     {
-        $organization = Organization::find($this->auth->organization_id);
+        $organization = Organization::find($this->auth->organization_uuid);
         $addresses = $organization->addresses()->get();
 
         return new AddressCollection($addresses);
@@ -71,7 +71,7 @@ class AddressController extends Controller
      */
     public function update(UpdateRequest $request)
     {
-        $organization = Organization::find($this->auth->organization_id);
+        $organization = Organization::find($this->auth->organization_uuid);
         $addressType = AddressType::where('name', $request->type)->first();
         $organization->addresses()->updateOrCreate(
             [

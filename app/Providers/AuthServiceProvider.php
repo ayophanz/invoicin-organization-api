@@ -19,7 +19,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app['auth']->viaRequest('api', function ($request) {
             $payload = $this->validateToken($request->header('Authorization'));
-            return $payload ? new User([], collect($payload)->only(['id', 'first_name', 'last_name', 'email', 'organization_id'])->toArray()) : null;
+
+            return $payload ? new User([], collect($payload)->only(['id', 'first_name', 'last_name', 'email', 'organization_uuid'])->toArray()) : null;
         });
     }
 }

@@ -13,7 +13,7 @@ trait JwtHelper
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
-            'organization_id' => $user->organization_id,
+            'organization_uuid' => $user->organization_uuid,
             'modules' => [],
             'iss' => env('APP_URL'),
             'exp' => time() + (60 * 60),
@@ -24,7 +24,7 @@ trait JwtHelper
 
     protected function validateToken($token)
     {
-        if (!$token) {
+        if (! $token) {
             return null;
         }
         if (strpos($token, 'Bearer') !== false) {

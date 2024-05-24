@@ -95,7 +95,7 @@ class OrganizationController extends Controller
      */
     public function show()
     {
-        $organization = Organization::find(Auth::user()->organization_id);
+        $organization = Organization::find(Auth::user()->organization_uuid);
         if ($organization) {
             return new OrganizationResource($organization);
         }
@@ -111,7 +111,7 @@ class OrganizationController extends Controller
      */
     public function showProfile(Request $request)
     {
-        $organization = Organization::find(Auth::user()->organization_id);
+        $organization = Organization::find(Auth::user()->organization_uuid);
         if ($organization) {
             return new OrganizationResource($organization);
         }
@@ -128,7 +128,7 @@ class OrganizationController extends Controller
      */
     public function updateProfile(UpdateProfileRequest $request)
     {
-        $organization = Organization::find(Auth::user()->organization_id);
+        $organization = Organization::find(Auth::user()->organization_uuid);
         if ($organization) {
             $organization->name = $request->name;
             $organization->email = $request->email;
