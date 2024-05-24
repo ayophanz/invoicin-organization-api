@@ -6,6 +6,7 @@ use App\Events\RegisteredEvent;
 use App\Http\Requests\Organization\StoreRequest;
 use App\Http\Requests\Organization\UpdateProfileRequest;
 use App\Http\Resources\OrganizationResource;
+use App\Models\AddressType;
 use App\Models\Organization;
 use App\Traits\ApiResponser;
 use App\Traits\ImageTrait;
@@ -67,6 +68,19 @@ class OrganizationController extends Controller
         $organization->name = $request->organization_name;
         $organization->email = $request->organization_email;
         $organization->save();
+
+        $addressType = AddressType::where('name', 'Billing')->first();
+        $organization->addresses()->create(
+            [
+                'address_type_id' => $addressType->id,
+                'organization_uuid' => $organization->uuid,
+                'country' => $request->country,
+                'state_province' => $request->state_province,
+                'city' => $request->city,
+                'zipcode' => $request->zipcode,
+                'address' => $request->address,
+            ]
+        );
 
         RegisteredEvent::dispatch($organization);
 
