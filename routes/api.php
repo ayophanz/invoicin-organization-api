@@ -18,10 +18,6 @@ use App\Http\Controllers\OrganizationSettingController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
         Route::post('validate', 'orgValidate');
