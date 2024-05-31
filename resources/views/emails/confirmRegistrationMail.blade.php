@@ -8,5 +8,5 @@ Verify
 Please disregard if you did not request it.
 
 Thanks,<br>
-{{ config('app.project_name') }}
+{{ config('app.name') }}
 @endcomponent
