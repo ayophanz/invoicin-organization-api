@@ -92,8 +92,8 @@ return [
     */
 
     'from' => [
-        'address' => env('PROJECT_EMAIL', 'app@invoicin.com'),
-        'name' => env('PROJECT_NAME', 'Invoicin'),
+        'address' => env('EMAIL', 'app@invoicin.com'),
+        'name' => env('NAME', 'Invoicin'),
     ],
 
     /*
