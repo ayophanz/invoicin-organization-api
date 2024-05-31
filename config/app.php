@@ -1,19 +1,6 @@
 <?php
 
 return [
-
-     /*
-    |--------------------------------------------------------------------------
-    | Project Environment
-    |--------------------------------------------------------------------------
-    |
-    */
-
-    'project_name' => env('PROJECT_NAME', NULL),
-    'project_email' => env('PROJECT_EMAIL', NULL),
-    'project_support_email' => env('PROJECT_SUPPORT_EMAIL', NULL),
-    'project_admin_email' => env('PROJECT_ADMIN_EMAIL', NULL),
-    'project_url' => env('PROJECT_URL', NULL),
     
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +66,14 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+
+    'ui_url' => env('APP_UI_URL', 'http://localhost'),
+
+    'email' => env('APP_EMAIL', ''),
+
+    'admin_email' => env('APP_ADMIN_EMAIL', ''),
+
+    'support_email' => env('APP_SUPPORT_EMAIL', ''),
 
     'asset_url' => env('ASSET_URL', null),
 

@@ -17,7 +17,7 @@ class OrganizationResource extends JsonResource
         return [
             'uuid'              => $this->uuid,
             'name'              => $this->name,
-            'logo'              => $this->image_path ? [config('app.project_url') . $this->image_path] : null,
+            'logo'              => $this->image_path ? [config('app.url') . $this->image_path] : null,
             'email'             => $this->email,
             'email_verified_at' => $this->email_verified_at
         ];
