@@ -7,7 +7,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "crazybooot/base64-validation": "^1.0",
-        "firebase/php-jwt": "^5.4",
+        "firebase/php-jwt": "^6.10.1",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "hashids/hashids": "^4.1",
