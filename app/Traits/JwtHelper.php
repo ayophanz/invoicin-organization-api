@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\User;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 trait JwtHelper
 {
@@ -19,7 +20,7 @@ trait JwtHelper
             'exp' => time() + (60 * 60),
         ], $payload);
 
-        return JWT::encode($payload, file_get_contents(config('jwt.private')), config('jwt.algorithm'));
+        return JWT::encode($payload, new Key(file_get_contents(config('jwt.private')), config('jwt.algorithm')));
     }
 
     protected function validateToken($token)
@@ -32,7 +33,7 @@ trait JwtHelper
             $token = $jwt[1];
         }
         try {
-            $result = JWT::decode($token, file_get_contents(config('jwt.public')), [config('jwt.algorithm')]);
+            $result = JWT::decode($token, new Key(file_get_contents(config('jwt.public')), config('jwt.algorithm')));
             $payload = json_decode(json_encode($result), true);
             info('user', ['payload' => $payload]);
 
