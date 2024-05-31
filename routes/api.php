@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\OrganizationAddressController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrganizationSettingController;
 
 /*
@@ -18,13 +18,8 @@ use App\Http\Controllers\OrganizationSettingController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::group(['prefix' => 'organization'], function () {
     Route::controller(OrganizationController::class)->group( function () {
-        Route::get('countries', 'countries');
         Route::post('validate', 'orgValidate');
         Route::post('verify', 'verifyOrganization');
     });
@@ -32,20 +27,13 @@ Route::group(['prefix' => 'organization'], function () {
         Route::controller(OrganizationController::class)->group( function () {
             Route::post('store', 'store');
             Route::get('show', 'show');
-            // Route::get('/settings', 'settings');
-            // Route::get('/addresses', 'addresses');
+            Route::get('profile/show', 'showProfile');
+            Route::put('profile/update', 'updateProfile');        
         });
-        Route::controller(OrganizationAddressController::class)->group( function () {
-            Route::get('addresses/show', 'show');
-            Route::post('addresses/store', 'store');
-            Route::put('addresses/update', 'update');
-            Route::delete('addresses/destroy', 'destroy');
-        });
-        Route::controller(OrganizationSettingController::class)->group( function () {
-            Route::get('settings/show', 'show');
-            Route::post('settings/store', 'store');
-            Route::put('settings/update', 'update');
-            Route::delete('settings/destroy', 'destroy');
+        
+        Route::controller(AddressController::class)->group( function () {
+            Route::get('addresses', 'index');
+            Route::put('addresses', 'update');
         });
     });
 });

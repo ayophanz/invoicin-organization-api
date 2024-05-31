@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Traits\UUID;
 
 class Organization extends Model
@@ -24,21 +25,17 @@ class Organization extends Model
 
      /**
      * A organization has many addresses.
-     *
-     * @return HasMany the attached addresses
      */
     public function addresses() : HasMany
     {
-        return $this->hasMany(OrganizationAddress::class);
+        return $this->hasMany(Address::class);
     }
 
      /**
-     * An customer has many organization settings.
-     *
-     * @return morphToMany The attached organization settings.
+     * An customer has many organization metadata.
      */
-    public function settings()
+    public function metaData() : MorphMany
     {
-        return $this->morphMany(OrganizationSetting::class, 'sourceable');
+        return $this->morphMany(MetaData::class, 'sourceable');
     }
 }
