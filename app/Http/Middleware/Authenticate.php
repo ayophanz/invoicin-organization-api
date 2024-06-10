@@ -2,48 +2,21 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Auth;
-use App\Models\TeamMember;
-use App\Models\Role;
-use App\Traits\ApiResponser;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
-class Authenticate
+class Authenticate extends Middleware
 {
-    use ApiResponser;
-
     /**
-     * The authentication guard factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
-     */
-    protected $auth;
-
-    /**
-     * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->auth = Auth::user();
-    }
-
-    /**
-     * Handle an incoming request.
+     * Get the path the user should be redirected to when they are not authenticated.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
-     * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    protected function redirectTo($request): ?string
     {
-        if (!Auth::check()) {
-            return $this->errorResponse('Unauthorized.', 401);
+        if (! $request->expectsJson()) {
+            return '/login';
         }
 
-        return $next($request);
+        return null;
     }
 }
