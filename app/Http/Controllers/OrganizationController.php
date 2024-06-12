@@ -128,20 +128,33 @@ class OrganizationController extends Controller
      */
     public function updateProfile(UpdateProfileRequest $request)
     {
-        $organization = Organization::find(Auth::user()->organization_uuid);
-        if ($organization) {
+        \DB::beginTransaction();
+        try {
+            $organization = Organization::find(Auth::user()->organization_uuid);
             $organization->name = $request->name;
             $organization->email = $request->email;
             $organization->save();
 
             if (count($request->logo) > 0) {
                 $this->storeImage($organization, $request->logo[0]);
+            } else {
+                if ($organization->image_path !== null &&
+                    $organization->image_path !== '' &&
+                    \File::exists(public_path().$organization->image_path)
+                ) {
+                    unlink(public_path().$organization->image_path);
+                }
+                $organization->image_path = '';
+                $organization->save();
             }
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
 
-            return $this->successResponse(['success' => true], Response::HTTP_OK);
+            return $this->errorResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->errorResponse(['error' => 'Not found'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->successResponse(['success' => true], Response::HTTP_OK);
     }
 
     /**
