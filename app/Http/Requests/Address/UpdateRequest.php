@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Address;
 
 use App\Http\Requests\BaseRequest;
-use Auth;
 
 class UpdateRequest extends BaseRequest
 {
@@ -14,8 +13,7 @@ class UpdateRequest extends BaseRequest
      */
     public function authorize()
     {
-        if (Auth::check()) return true;
-        return false;
+        return true;
     }
 
     /**
@@ -26,11 +24,11 @@ class UpdateRequest extends BaseRequest
     public function rules()
     {
         return [
-            'address'         => 'required',
-            'city'            => 'required',
-            'zipcode'         => 'required|numeric',
-            'state_province'  => 'required',
-            'country'         => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'zipcode' => 'required|numeric',
+            'state_province' => 'required',
+            'country' => 'required',
         ];
     }
 }
