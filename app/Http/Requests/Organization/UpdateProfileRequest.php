@@ -14,11 +14,7 @@ class UpdateProfileRequest extends BaseRequest
      */
     public function authorize()
     {
-        if (Auth::check()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
