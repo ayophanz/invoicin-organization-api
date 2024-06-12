@@ -9,6 +9,7 @@ use App\Http\Resources\OrganizationResource;
 use App\Models\AddressType;
 use App\Models\Organization;
 use App\Traits\ApiResponser;
+use App\Traits\BgColorTrait;
 use App\Traits\ImageTrait;
 use Auth;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ use Illuminate\Http\Response;
 class OrganizationController extends Controller
 {
     use ApiResponser;
+    use BgColorTrait;
     use ImageTrait;
 
     public function __construct()
@@ -31,16 +33,6 @@ class OrganizationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -64,25 +56,38 @@ class OrganizationController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $organization = new Organization();
-        $organization->name = $request->organization_name;
-        $organization->email = $request->organization_email;
-        $organization->save();
+        \DB::beginTransaction();
+        try {
+            $organization = new Organization();
+            $organization->name = $request->organization_name;
+            $organization->email = $request->organization_email;
+            $organization->save();
 
-        $addressType = AddressType::where('name', 'Billing')->first();
-        $organization->addresses()->create(
-            [
-                'address_type_id' => $addressType->id,
-                'organization_uuid' => $organization->uuid,
-                'country' => $request->country,
-                'state_province' => $request->state_province,
-                'city' => $request->city,
-                'zipcode' => $request->zipcode,
-                'address' => $request->address,
-            ]
-        );
+            $organization->metaData()->create([
+                'key' => 'default_profile_logo_bg',
+                'value' => $this->randomBgColor(),
+            ]);
 
-        RegisteredEvent::dispatch($organization);
+            $addressType = AddressType::where('name', 'Billing')->first();
+            $organization->addresses()->create(
+                [
+                    'address_type_id' => $addressType->id,
+                    'organization_uuid' => $organization->uuid,
+                    'country' => $request->country,
+                    'state_province' => $request->state_province,
+                    'city' => $request->city,
+                    'zipcode' => $request->zipcode,
+                    'address' => $request->address,
+                ]
+            );
+            RegisteredEvent::dispatch($organization);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return $this->errorResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return $this->successResponse($organization, Response::HTTP_OK);
     }
